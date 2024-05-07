@@ -3,6 +3,9 @@ import {Inter} from "next/font/google";
 import Table from "react-bootstrap/Table";
 import {Alert, Container} from "react-bootstrap";
 import {GetServerSideProps, GetServerSidePropsContext} from "next";
+import { redirect, usePathname } from "next/navigation";
+import { Pagination } from "@/components/pagination";
+import { useRouter } from "next/router";
 
 const inter = Inter({subsets: ["latin"]});
 
@@ -42,9 +45,22 @@ export const getServerSideProps = (async (ctx: GetServerSidePropsContext): Promi
   }
 }) satisfies GetServerSideProps<TGetServerSideProps>
 
+export const USERS_PER_PAGE = 20;
+export const PAGINATION_SIZE = 10;
 
-export default function Home({statusCode, users}: TGetServerSideProps) {
-  if (statusCode !== 200) {
+export default function Home({statusCode, data}: TGetServerSideProps) {
+  const router = useRouter();
+
+  const handlePagination = (page: number) => {
+    const currentQuery = router.query;
+    currentQuery.page = String(page);
+    router.push({
+      pathname: router.pathname,
+      query: currentQuery,
+    })
+  };
+
+  if (statusCode !== 200 || data == null) {
     return <Alert variant={'danger'}>Ошибка {statusCode} при загрузке данных</Alert>
   }
 
@@ -90,7 +106,7 @@ export default function Home({statusCode, users}: TGetServerSideProps) {
             </tbody>
           </Table>
 
-          {/*TODO add pagination*/}
+          <Pagination total={Math.ceil(count / USERS_PER_PAGE)} currentPage={page} max={PAGINATION_SIZE} onClick={handlePagination} />
 
         </Container>
       </main>
