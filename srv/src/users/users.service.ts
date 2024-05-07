@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UsersEntity } from './users.entity';
+import { UsersEntity } from './users.entity.js';
 import { Repository } from 'typeorm';
 
 @Injectable()

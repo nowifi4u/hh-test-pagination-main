@@ -1,4 +1,4 @@
-import { UsersEntity } from './users.entity';
+import { UsersEntity } from './users.entity.js';
 
 export class UsersResponseDto {
   id: number;
