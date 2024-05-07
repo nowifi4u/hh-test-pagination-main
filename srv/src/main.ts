@@ -1,3 +1,6 @@
+import { config as dotenvConfig } from 'dotenv';
+dotenvConfig();
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
 
