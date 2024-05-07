@@ -17,22 +17,28 @@ type TUserItem = {
 
 type TGetServerSideProps = {
   statusCode: number
-  users: TUserItem[]
+  data?: {
+    users: TUserItem[]
+    count: number
+    page: number
+  }
 }
 
 
 export const getServerSideProps = (async (ctx: GetServerSidePropsContext): Promise<{ props: TGetServerSideProps }> => {
   try {
-    const res = await fetch("http://localhost:3000/users", {method: 'GET'})
+    const page = ctx.query.page != null ? Array.isArray(ctx.query.page) ? ctx.query.page[0] : ctx.query.page : 1;
+
+    const res = await fetch(`http://localhost:3000/users?page=${page}`, {method: 'GET'})
     if (!res.ok) {
-      return {props: {statusCode: res.status, users: []}}
+      return {props: {statusCode: res.status}}
     }
 
     return {
-      props: {statusCode: 200, users: await res.json()}
+      props: {statusCode: 200, data: await res.json()}
     }
   } catch (e) {
-    return {props: {statusCode: 500, users: []}}
+    return {props: {statusCode: 500}}
   }
 }) satisfies GetServerSideProps<TGetServerSideProps>
 
@@ -41,6 +47,8 @@ export default function Home({statusCode, users}: TGetServerSideProps) {
   if (statusCode !== 200) {
     return <Alert variant={'danger'}>Ошибка {statusCode} при загрузке данных</Alert>
   }
+
+  const { users, count, page } = data;
 
   return (
     <>
